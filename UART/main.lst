@@ -1,0 +1,236 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.file 0 "C:\\Users\\akash\\Desktop\\GIT_Projects\\Bare-Metal-Arduino-UNO\\UART" "main.c"
+  11               	.global	uart_init
+  13               	uart_init:
+  14               	.LFB0:
+  15               		.file 1 "main.c"
+   1:main.c        **** #include<stdint.h>
+   2:main.c        **** 
+   3:main.c        **** #include<avr/io.h>
+   4:main.c        **** 
+   5:main.c        **** // Define Baud Rate
+   6:main.c        **** #define F_CPU   16000000UL    // 16MHz
+   7:main.c        **** #define BAUD    9600
+   8:main.c        **** #define MY_UBRR ((F_CPU/16/BAUD)-1)
+   9:main.c        **** 
+  10:main.c        **** 
+  11:main.c        **** void uart_init(void)
+  12:main.c        **** {
+  16               		.loc 1 12 1 view -0
+  17               		.cfi_startproc
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  13:main.c        ****     uint16_t ubrr = MY_UBRR;
+  22               		.loc 1 13 5 view .LVU1
+  23               	.LVL0:
+  14:main.c        ****     UBRR0H = (ubrr >> 8);    // Set baud rate high byte
+  24               		.loc 1 14 5 view .LVU2
+  25               		.loc 1 14 12 is_stmt 0 view .LVU3
+  26 0000 1092 C500 		sts 197,__zero_reg__
+  15:main.c        ****     UBRR0L = ubrr;          // Set baud rate low byte
+  27               		.loc 1 15 5 is_stmt 1 view .LVU4
+  28               		.loc 1 15 12 is_stmt 0 view .LVU5
+  29 0004 87E6      		ldi r24,lo8(103)
+  30 0006 8093 C400 		sts 196,r24
+  16:main.c        **** 
+  17:main.c        ****     UCSR0B = (1 << TXEN0) | (1 << RXEN0);   // Enable transmitter and receiver
+  31               		.loc 1 17 5 is_stmt 1 view .LVU6
+  32               		.loc 1 17 12 is_stmt 0 view .LVU7
+  33 000a 88E1      		ldi r24,lo8(24)
+  34 000c 8093 C100 		sts 193,r24
+  18:main.c        ****     UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // 8-bit data, 1 stop bit, no parity
+  35               		.loc 1 18 5 is_stmt 1 view .LVU8
+  36               		.loc 1 18 12 is_stmt 0 view .LVU9
+  37 0010 86E0      		ldi r24,lo8(6)
+  38 0012 8093 C200 		sts 194,r24
+  39               	/* epilogue start */
+  19:main.c        **** }
+  40               		.loc 1 19 1 view .LVU10
+  41 0016 0895      		ret
+  42               		.cfi_endproc
+  43               	.LFE0:
+  45               	.global	uart_send_char
+  47               	uart_send_char:
+  48               	.LFB1:
+  20:main.c        **** 
+  21:main.c        **** // Transmit a single character
+  22:main.c        **** void uart_send_char(char c)
+  23:main.c        **** {
+  49               		.loc 1 23 1 is_stmt 1 view -0
+  50               		.cfi_startproc
+  51               	/* prologue: function */
+  52               	/* frame size = 0 */
+  53               	/* stack size = 0 */
+  54               	.L__stack_usage = 0
+  55               	.LVL1:
+  56               	.L3:
+  24:main.c        ****     while(!(UCSR0A & (1 << UDRE0)));    //Wait until buffer is empty
+  57               		.loc 1 24 11 discriminator 1 view .LVU12
+  58               		.loc 1 24 13 is_stmt 0 discriminator 1 view .LVU13
+  59 0018 9091 C000 		lds r25,192
+  60               		.loc 1 24 11 discriminator 1 view .LVU14
+  61 001c 95FF      		sbrs r25,5
+  62 001e 00C0      		rjmp .L3
+  25:main.c        ****     UDR0 = c;    // send character
+  63               		.loc 1 25 5 is_stmt 1 view .LVU15
+  64               		.loc 1 25 10 is_stmt 0 view .LVU16
+  65 0020 8093 C600 		sts 198,r24
+  66               	/* epilogue start */
+  26:main.c        **** }
+  67               		.loc 1 26 1 view .LVU17
+  68 0024 0895      		ret
+  69               		.cfi_endproc
+  70               	.LFE1:
+  72               	.global	uart_send_string
+  74               	uart_send_string:
+  75               	.LVL2:
+  76               	.LFB2:
+  27:main.c        **** 
+  28:main.c        **** // Transmit a string
+  29:main.c        **** void uart_send_string(const char* str)
+  30:main.c        **** {
+  77               		.loc 1 30 1 is_stmt 1 view -0
+  78               		.cfi_startproc
+  79               		.loc 1 30 1 is_stmt 0 view .LVU19
+  80 0026 CF93      		push r28
+  81               		.cfi_def_cfa_offset 3
+  82               		.cfi_offset 28, -2
+  83 0028 DF93      		push r29
+  84               		.cfi_def_cfa_offset 4
+  85               		.cfi_offset 29, -3
+  86               	/* prologue: function */
+  87               	/* frame size = 0 */
+  88               	/* stack size = 2 */
+  89               	.L__stack_usage = 2
+  90 002a EC01      		movw r28,r24
+  31:main.c        ****     while(*str)
+  91               		.loc 1 31 5 is_stmt 1 view .LVU20
+  92               	.LVL3:
+  93               	.L7:
+  94               		.loc 1 31 11 view .LVU21
+  95 002c 8881      		ld r24,Y
+  96 002e 8111      		cpse r24,__zero_reg__
+  97 0030 00C0      		rjmp .L8
+  98               	/* epilogue start */
+  32:main.c        ****     {
+  33:main.c        ****         uart_send_char(*str++);
+  34:main.c        ****     }
+  35:main.c        **** }
+  99               		.loc 1 35 1 is_stmt 0 view .LVU22
+ 100 0032 DF91      		pop r29
+ 101 0034 CF91      		pop r28
+ 102               	.LVL4:
+ 103               		.loc 1 35 1 view .LVU23
+ 104 0036 0895      		ret
+ 105               	.LVL5:
+ 106               	.L8:
+ 107               		.loc 1 35 1 view .LVU24
+ 108 0038 2196      		adiw r28,1
+ 109               	.LVL6:
+  33:main.c        ****     }
+ 110               		.loc 1 33 9 is_stmt 1 view .LVU25
+  33:main.c        ****     }
+ 111               		.loc 1 33 9 is_stmt 0 view .LVU26
+ 112 003a 0E94 0000 		call uart_send_char
+ 113               	.LVL7:
+ 114 003e 00C0      		rjmp .L7
+ 115               		.cfi_endproc
+ 116               	.LFE2:
+ 118               	.global	uart_receive_char
+ 120               	uart_receive_char:
+ 121               	.LFB3:
+  36:main.c        **** 
+  37:main.c        **** // Receive a single character
+  38:main.c        **** char uart_receive_char(void)
+  39:main.c        **** {
+ 122               		.loc 1 39 1 is_stmt 1 view -0
+ 123               		.cfi_startproc
+ 124               	/* prologue: function */
+ 125               	/* frame size = 0 */
+ 126               	/* stack size = 0 */
+ 127               	.L__stack_usage = 0
+ 128               	.L10:
+  40:main.c        ****     while(!(UCSR0A & (1 << RXC0)));     // wait until data is received
+ 129               		.loc 1 40 11 discriminator 1 view .LVU28
+ 130               		.loc 1 40 13 is_stmt 0 discriminator 1 view .LVU29
+ 131 0040 8091 C000 		lds r24,192
+ 132               		.loc 1 40 11 discriminator 1 view .LVU30
+ 133 0044 87FF      		sbrs r24,7
+ 134 0046 00C0      		rjmp .L10
+  41:main.c        ****     return UDR0;
+ 135               		.loc 1 41 5 is_stmt 1 view .LVU31
+ 136               		.loc 1 41 12 is_stmt 0 view .LVU32
+ 137 0048 8091 C600 		lds r24,198
+ 138               	/* epilogue start */
+  42:main.c        **** }
+ 139               		.loc 1 42 1 view .LVU33
+ 140 004c 0895      		ret
+ 141               		.cfi_endproc
+ 142               	.LFE3:
+ 144               		.section	.rodata.str1.1,"aMS",@progbits,1
+ 145               	.LC0:
+ 146 0000 4865 6C6C 		.string	"Hello from atmega328p!\r\n"
+ 146      6F20 6672 
+ 146      6F6D 2061 
+ 146      746D 6567 
+ 146      6133 3238 
+ 147               		.section	.text.startup,"ax",@progbits
+ 148               	.global	main
+ 150               	main:
+ 151               	.LFB4:
+  43:main.c        **** 
+  44:main.c        **** // main function
+  45:main.c        **** int main(void)
+  46:main.c        **** {
+ 152               		.loc 1 46 1 is_stmt 1 view -0
+ 153               		.cfi_startproc
+ 154               	/* prologue: function */
+ 155               	/* frame size = 0 */
+ 156               	/* stack size = 0 */
+ 157               	.L__stack_usage = 0
+  47:main.c        ****     uart_init();
+ 158               		.loc 1 47 5 view .LVU35
+ 159 0000 0E94 0000 		call uart_init
+ 160               	.LVL8:
+  48:main.c        **** 
+  49:main.c        ****     uart_send_string("Hello from atmega328p!\r\n");
+ 161               		.loc 1 49 5 view .LVU36
+ 162 0004 80E0      		ldi r24,lo8(.LC0)
+ 163 0006 90E0      		ldi r25,hi8(.LC0)
+ 164 0008 0E94 0000 		call uart_send_string
+ 165               	.LVL9:
+ 166               	.L13:
+  50:main.c        **** 
+  51:main.c        ****     while(1)
+ 167               		.loc 1 51 5 view .LVU37
+ 168               	.LBB2:
+  52:main.c        ****     {
+  53:main.c        ****         char c = uart_receive_char();   // Receive a char
+ 169               		.loc 1 53 9 view .LVU38
+ 170               		.loc 1 53 18 is_stmt 0 view .LVU39
+ 171 000c 0E94 0000 		call uart_receive_char
+ 172               	.LVL10:
+  54:main.c        ****         uart_send_char(c);              // Echo it back
+ 173               		.loc 1 54 9 is_stmt 1 discriminator 2 view .LVU40
+ 174 0010 0E94 0000 		call uart_send_char
+ 175               	.LVL11:
+ 176               		.loc 1 54 9 is_stmt 0 discriminator 2 view .LVU41
+ 177               	.LBE2:
+  51:main.c        ****     {
+ 178               		.loc 1 51 10 is_stmt 1 view .LVU42
+ 179 0014 00C0      		rjmp .L13
+ 180               		.cfi_endproc
+ 181               	.LFE4:
+ 183               		.text
+ 184               	.Letext0:
+ 185               		.file 2 "D:/avr8-gnu-toolchain-4.0.0.52-win32.any.x86_64/avr8-gnu-toolchain-win32_x86_64/avr/inclu
